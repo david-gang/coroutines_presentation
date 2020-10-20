@@ -1,4 +1,7 @@
+import kotlinx.serialization.Serializable
+
 data class Tweet(val message:String, val retweets:Int)
+@Serializable
 data class FacebookPost(val message: String, val likes:Int)
 
 fun getPosts():List<FacebookPost> {

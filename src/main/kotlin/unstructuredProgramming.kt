@@ -3,16 +3,15 @@ import kotlinx.serialization.json.Json
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
-import java.nio.file.Files
 import java.util.concurrent.CompletableFuture
-import kotlin.streams.asSequence
+import java.util.concurrent.TimeUnit
 
 fun main() {
     println("Starting")
     val tweetsFuture = badGetTweets()
     val postsFuture = badGetPosts()
     val popularityFuture = tweetsFuture.thenCombine(postsFuture) { tweets, posts -> popularity(tweets, posts) }
-    val popularityScore = popularityFuture.get()
+    val popularityScore = popularityFuture.get(100, TimeUnit.MILLISECONDS)
     println(popularityScore)
 }
 
@@ -20,6 +19,7 @@ fun badGetTweets(): CompletableFuture<List<Tweet>> {
     val future = CompletableFuture.supplyAsync{
         getTweets()
     }
+    // this future eescapes
     future.thenAcceptAsync{sendSms(it)}
     return future
 }
@@ -29,18 +29,20 @@ fun sendSms(tweets: List<Tweet>) {
 }
 
 private fun badResourceManaging(file: File):CompletableFuture<List<FacebookPost>> {
-    BufferedReader(FileReader(file)).use {reader->
-        return CompletableFuture.supplyAsync {
-            val list = mutableListOf<FacebookPost>()
+    return CompletableFuture.supplyAsync { BufferedReader(FileReader(file)) }.thenApply { reader->
+        println("I am going to run but not to finish. NOw file reader stays open")
+        Thread.sleep(1000)
+        val list = mutableListOf<FacebookPost>()
             var line = reader.readLine()
             while (line != null) {
                 list.add(Json.decodeFromString(line))
                 line = reader.readLine();
             }
-             list
-        }
+        println("I am dying earlier")
+        reader.close()
+        list.toList()
     }
 
 }
 
-fun badGetPosts() =badResourceManaging(File("a.txt"))
+fun badGetPosts() =badResourceManaging(File("/Users/dgang/open-source/coroutines_presentation/src/main/kotlin/coroutines_introduction.kt"))
