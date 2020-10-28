@@ -1,4 +1,4 @@
-//Adoppted from https://kotlinlang.org/docs/reference/coroutines/shared-mutable-state-and-concurrency.html
+//Adopted from https://kotlinlang.org/docs/reference/coroutines/shared-mutable-state-and-concurrency.html
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.sync.Mutex

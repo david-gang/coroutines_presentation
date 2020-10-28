@@ -17,7 +17,7 @@ suspend fun main() = coroutineScope {
 
 suspend fun supervisorJobRunsAllCoroutinesEvenAfterFailing() =supervisorScope {
         launch {
-            //failingFun()
+            failingFun()
         }
         launch {
             println("Starting coroutine which will finish")
